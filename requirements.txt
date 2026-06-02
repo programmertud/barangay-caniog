@@ -1,0 +1,8 @@
+Django==5.2.8
+crispy-bootstrap5
+django-crispy-forms
+django-simple-history
+dj-database-url
+gunicorn
+psycopg2-binary
+whitenoise
