@@ -15,6 +15,7 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 try:
+    import psycopg2
     _application = get_wsgi_application()
 except Exception:
     import traceback
