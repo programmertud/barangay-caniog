@@ -8,18 +8,17 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 """
 
 import os
-import traceback
-
-from django.core.wsgi import get_wsgi_application
+import sys
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 try:
+    from django.core.wsgi import get_wsgi_application
     _application = get_wsgi_application()
 except Exception:
     import traceback
     error_msg = traceback.format_exc()
-    print("WSGI STARTUP ERROR:\n", error_msg)
+    print("WSGI STARTUP ERROR:\n", error_msg, file=sys.stderr)
 
     def _application(environ, start_response):
         status = '500 Internal Server Error'
@@ -27,4 +26,6 @@ except Exception:
         start_response(status, headers)
         return [b"STARTUP ERROR:\n\n" + error_msg.encode()]
 
+# Ensure Vercel can find the app
 application = _application
+app = application

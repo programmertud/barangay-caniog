@@ -1,0 +1,213 @@
+/* MODERN LIGHT DASHBOARD STYLES - ROBUST OVERRIDE */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-green: #166534;
+    --primary-blue: #1d4ed8;
+    --primary-red: #991b1b;
+    --primary-yellow: #eab308;
+    
+    --primary-gradient: linear-gradient(135deg, #166534 0%, #15803d 100%);
+    --secondary-gradient: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+    --accent-gradient: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+    
+    --sidebar-bg: #ffffff;
+    --dark-bg: #f8fafc;
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+}
+
+body {
+    background-color: var(--dark-bg) !important;
+    color: var(--text-main) !important;
+    font-family: 'Outfit', sans-serif !important;
+    margin: 0;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-main) !important;
+    font-weight: 700 !important;
+}
+
+.text-primary, .bg-primary { --bs-primary-rgb: 22, 101, 52; }
+.bg-primary { background-color: var(--primary-green) !important; }
+.text-primary { color: var(--primary-green) !important; }
+
+.bg-secondary { background-color: var(--primary-blue) !important; }
+.text-secondary { color: var(--primary-blue) !important; }
+
+.text-muted, .text-white-50 {
+    color: var(--text-muted) !important;
+    opacity: 1 !important;
+}
+
+.text-danger { color: var(--primary-red) !important; }
+
+.breadcrumb-item, .breadcrumb-item a {
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
+}
+
+.nav-link {
+    color: var(--text-main) !important;
+}
+
+/* SIDEBAR - CLEAN WHITE */
+.sidebar {
+    width: 280px !important;
+    height: 100vh !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    background: #ffffff !important;
+    border-right: 1px solid var(--glass-border) !important;
+    padding: 2.5rem 1.25rem !important;
+    z-index: 1050 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02) !important;
+    overflow-y: auto !important;
+}
+
+.nav-link {
+    color: #000000 !important;
+    border-radius: 12px !important;
+    padding: 0.8rem 1.2rem !important;
+    margin-bottom: 0.4rem !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+}
+
+.nav-link i {
+    width: 24px !important;
+    margin-right: 12px !important;
+    font-size: 1.1rem !important;
+    color: #000000 !important;
+    opacity: 1 !important;
+}
+
+.nav-link:hover {
+    background: #f8fafc !important;
+    color: var(--primary-green) !important;
+}
+
+.nav-link.active {
+    background: #f0fdf4 !important;
+    color: var(--primary-green) !important;
+    font-weight: 600 !important;
+    border-left: 4px solid var(--primary-green) !important;
+    border-radius: 0 12px 12px 0 !important;
+}
+
+/* TOPBAR - WHITE & BLURRED */
+.topbar {
+    height: 75px !important;
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: 280px !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    z-index: 1000 !important;
+    padding: 0 2.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: 280px !important;
+    padding: 110px 3rem 3rem 3rem !important;
+    min-height: 100vh !important;
+    background-color: #f8fafc !important;
+}
+
+/* CARDS */
+.glass-card {
+    background: #ffffff;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--card-shadow) !important;
+}
+
+.table-glass td img {
+    max-width: 150px;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* STATS */
+.stat-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #0f172a !important;
+}
+
+/* BUTTONS */
+.btn-primary-glass {
+    background: var(--primary-gradient) !important;
+    border: none !important;
+    color: #fff !important;
+    padding: 0.7rem 1.5rem !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* TABLES */
+.table-glass {
+    color: var(--text-main) !important;
+}
+
+.table-glass thead th {
+    background: #f8fafc !important;
+    color: var(--text-muted) !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 1rem !important;
+}
+
+.table-glass td {
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 1rem !important;
+}
+
+/* BADGES */
+.badge {
+    padding: 0.35rem 0.7rem !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+}
+
+.badge-high { background: #fee2e2 !important; color: #000000 !important; border: 1px solid #fca5a5 !important; font-weight: 700 !important; font-size: 0.75rem !important; }
+.badge-medium { background: #fef3c7 !important; color: #000000 !important; border: 1px solid #fcd34d !important; font-weight: 700 !important; font-size: 0.75rem !important; }
+.badge-low { background: #dcfce7 !important; color: #000000 !important; border: 1px solid #86efac !important; font-weight: 700 !important; font-size: 0.75rem !important; }
+
+/* Custom Badge for Verified */
+.badge-verified { background: #e0e7ff !important; color: #000000 !important; border: 1px solid #a5b4fc !important; font-weight: 700 !important; font-size: 0.75rem !important; }
+
+/* INPUTS */
+.form-control, .form-select {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: var(--text-main) !important;
+}
+
+.topbar-search input {
+    background: #f1f5f9 !important;
+    border: none !important;
+    padding-left: 40px !important;
+}
