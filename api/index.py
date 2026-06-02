@@ -2,7 +2,7 @@ import os
 import sys
 
 # Ensure the root directory is in the Python path
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
@@ -20,6 +20,4 @@ except BaseException as e:
         start_response(status, headers)
         return [b"CRITICAL STARTUP ERROR:\n\n" + error_msg.encode()]
 
-# Vercel needs exactly 'app' or 'application'
 application = app
-
