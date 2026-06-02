@@ -6,3 +6,5 @@ dj-database-url
 gunicorn
 psycopg2-binary
 whitenoise
+qrcode[pil]
+pillow
