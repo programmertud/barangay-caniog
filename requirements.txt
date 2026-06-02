@@ -4,7 +4,7 @@ django-crispy-forms
 django-simple-history
 dj-database-url
 gunicorn
-psycopg[binary]
+psycopg2-binary
 whitenoise
 qrcode[pil]
 pillow

@@ -3,14 +3,14 @@
   "buildCommand": "bash build_files.sh",
   "builds": [
     {
-      "src": "config/wsgi.py",
+      "src": "vercel_app.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "config/wsgi.py"
+      "dest": "vercel_app.py"
     }
   ]
 }
