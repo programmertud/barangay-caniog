@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 try:
     from django.core.wsgi import get_wsgi_application
     app = get_wsgi_application()
-except Exception:
+except BaseException as e:
     import traceback
     error_msg = traceback.format_exc()
     print("WSGI STARTUP ERROR:\n", error_msg, file=sys.stderr)
@@ -18,7 +18,8 @@ except Exception:
         status = '500 Internal Server Error'
         headers = [('Content-Type', 'text/plain; charset=utf-8')]
         start_response(status, headers)
-        return [b"STARTUP ERROR:\n\n" + error_msg.encode()]
+        return [b"CRITICAL STARTUP ERROR:\n\n" + error_msg.encode()]
 
 # Vercel needs exactly 'app' or 'application'
 application = app
+
