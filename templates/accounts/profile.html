@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="fw-bold text-dark">My Profile</h2>
+            <p class="text-muted">Manage your personal information and account settings</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row align-items-center mb-4">
+                        <div class="col-md-3 text-center">
+                            <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://ui-avatars.com/api/?name={{ user.get_full_name|urlencode }}&size=200{% endif %}" class="rounded-circle mb-3" width="120" height="120">
+                            <div class="input-group input-group-sm">
+                                <input type="file" name="profile_picture" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted small">First Name</label>
+                                    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted small">Last Name</label>
+                                    <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Email Address</label>
+                                <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Phone Number</label>
+                                <input type="text" name="phone_number" class="form-control" value="{{ user.phone_number }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Role</label>
+                                <input type="text" class="form-control" value="{{ user.get_role_display }}" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end border-top pt-3">
+                        <button type="submit" class="btn btn-primary-glass">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

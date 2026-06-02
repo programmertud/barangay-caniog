@@ -1,0 +1,400 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aid Distribution Tracker System (Relief Goods) | Dashboard{% endblock %}</title>
+    <!-- Outfit Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* CRITICAL LAYOUT FALLBACK - LIGHT MODE */
+        :root {
+            --sidebar-width: 280px;
+            --topbar-height: 75px;
+            --light-core: #ffffff;
+            --body-bg: #f8fafc;
+        }
+        body { 
+            background-color: var(--body-bg) !important; 
+            margin: 0; 
+            padding: 0; 
+            color: #0f172a !important;
+            font-family: 'Outfit', sans-serif !important;
+        }
+        .sidebar {
+            width: var(--sidebar-width) !important;
+            height: 100vh !important;
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            background: var(--light-core) !important;
+            z-index: 1100 !important;
+            border-right: 1px solid rgba(0,0,0,0.05) !important;
+            padding: 2rem 1.25rem !important;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.02) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-y: auto !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .sidebar.collapsed {
+            transform: translateX(-100%) !important;
+        }
+        .topbar {
+            height: var(--topbar-height) !important;
+            position: fixed !important;
+            top: 0 !important;
+            right: 0 !important;
+            width: calc(100% - var(--sidebar-width)) !important;
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(15px) !important;
+            z-index: 1000 !important;
+            border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+            padding: 0 2rem !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .topbar.expanded {
+            width: 100% !important;
+            left: 0 !important;
+        }
+        .main-content {
+            width: calc(100% - var(--sidebar-width)) !important;
+            margin-left: var(--sidebar-width) !important;
+            padding: calc(var(--topbar-height) + 2rem) 2rem 2rem 2rem !important;
+            min-height: 100vh !important;
+            position: relative !important;
+            background-color: var(--body-bg) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .main-content.expanded {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        .nav-link { color: #64748b !important; text-decoration: none !important; }
+        .nav-link.active { color: #3b82f6 !important; background: #eff6ff !important; font-weight: 600 !important; }
+        .breadcrumb-item, .breadcrumb-item a { color: #64748b !important; }
+        .breadcrumb-item.active { color: #000000 !important; font-weight: 600 !important; }
+        @media (max-width: 1200px) {
+            .sidebar { transform: translateX(-100%); }
+            .topbar, .main-content { width: 100% !important; margin-left: 0 !important; }
+            .sidebar.show { transform: translateX(0) !important; }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <!-- MODERN FIXED SIDEBAR -->
+    <aside class="sidebar" id="mainSidebar">
+        <div class="sidebar-header px-2 mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center overflow-hidden">
+                    <div class="logo-container shadow-sm me-3" style="width: 48px; height: 48px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; border: 2px solid #f1f5f9; background: #fff;">
+                        <img src="{% static 'img/logo.jpg' %}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; padding: 2px;">
+                    </div>
+                    <div class="brand-text overflow-hidden">
+                        <h6 class="fw-bold text-dark mb-0 text-truncate" style="letter-spacing: -0.5px; line-height: 1.2; font-size: 0.85rem;">Aid Distribution</h6>
+                        <small class="text-muted d-block text-truncate" style="font-size: 0.65rem; font-weight: 600;">Tracker System</small>
+                    </div>
+                </div>
+                <button class="btn btn-light btn-sm rounded-3 shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; flex-shrink: 0;" onclick="toggleSidebar()">
+                    <i class="fas fa-chevron-left text-muted" id="toggleIcon"></i>
+                </button>
+            </div>
+            <div class="ms-1 d-flex align-items-center gap-2 border-top pt-2 border-secondary border-opacity-10">
+                <span class="badge bg-success bg-opacity-10 text-success border-0 p-0" style="font-size: 0.65rem; font-weight: 700;">Barangay Cagniog</span>
+                <span class="text-muted opacity-25">|</span>
+                <small class="text-muted" style="font-size: 0.55rem; font-weight: 800; text-transform: uppercase;">Relief Goods</small>
+            </div>
+        </div>
+        
+        <nav class="nav flex-column flex-grow-1">
+            <a class="nav-link {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard:home' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+            <a class="nav-link {% if request.resolver_match.app_name == 'beneficiaries' %}active{% endif %}" href="{% url 'beneficiaries:list' %}">
+                <i class="fas fa-users"></i> Beneficiaries
+            </a>
+            <a class="nav-link {% if request.resolver_match.app_name == 'inventory' %}active{% endif %}" href="{% url 'inventory:list' %}">
+                <i class="fas fa-boxes"></i> Inventory
+            </a>
+            <a class="nav-link {% if request.resolver_match.app_name == 'events' %}active{% endif %}" href="{% url 'events:list' %}">
+                <i class="fas fa-calendar-day"></i> Relief Events
+            </a>
+            <a class="nav-link {% if request.resolver_match.app_name == 'distribution' %}active{% endif %}" href="{% url 'distribution:list' %}">
+                <i class="fas fa-shipping-fast"></i> Distributions
+            </a>
+            <div class="my-4 border-top border-secondary opacity-25"></div>
+            {% if user.is_admin %}
+            <a class="nav-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %}" href="{% url 'reports:home' %}">
+                <i class="fas fa-file-invoice-dollar"></i> Analytics & Reports
+            </a>
+            <a class="nav-link {% if request.resolver_match.app_name == 'logs' %}active{% endif %}" href="{% url 'logs:list' %}">
+                <i class="fas fa-shield-halved"></i> Activity Logs
+            </a>
+            {% endif %}
+        </nav>
+        
+        <!-- SIDEBAR FOOTER PROFILE -->
+        <div class="sidebar-footer mt-auto pt-4">
+            <div class="glass-card p-3 d-flex align-items-center">
+                <div class="position-relative me-3">
+                    <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username|urlencode }}&background=6366f1&color=fff{% endif %}" class="rounded-3" width="42" height="42" style="object-fit: cover;">
+                    <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-2 border-dark rounded-circle"></span>
+                </div>
+                <div class="overflow-hidden">
+                    <div class="fw-bold small text-dark text-truncate">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="text-muted text-truncate" style="font-size: 0.7rem;">{{ user.get_role_display }}</div>
+                </div>
+                <form action="{% url 'accounts:logout' %}" method="post" class="ms-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-light text-danger rounded-3 border-0 shadow-sm" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-power-off"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- FIXED TOPBAR -->
+    <header class="topbar" id="mainTopbar">
+        <div class="d-flex align-items-center">
+            <button class="btn text-dark me-3 d-flex align-items-center justify-content-center" onclick="toggleSidebar()" id="mobileMenuBtn" style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 12px; display: none;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    {% if request.resolver_match.app_name %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ request.resolver_match.app_name|title }}</li>
+                    {% endif %}
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <form action="{% url 'beneficiaries:list' %}" method="get" class="topbar-search d-none d-md-block">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" class="form-control" placeholder="Search records...">
+            </form>
+            
+            <!-- AI CHAT-TO-REPORT TRIGGER -->
+            <button class="btn btn-primary-glass rounded-3 p-2 px-md-3 d-flex align-items-center gap-2 border-0 shadow-sm" 
+                    style="background: linear-gradient(135deg, #6366f1, #a855f7) !important;"
+                    data-bs-toggle="offcanvas" data-bs-target="#aiChatSidebar">
+                <i class="fas fa-wand-magic-sparkles text-white"></i>
+                <span class="small fw-bold text-white d-none d-xl-inline">AI Assistant</span>
+            </button>
+            
+            <div class="dropdown">
+                <button class="btn btn-light rounded-3 p-2 bg-transparent border-secondary border-opacity-25 position-relative" data-bs-toggle="dropdown">
+                    <i class="fas fa-bell text-dark"></i>
+                    {% if unread_notifications_count %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-circle bg-danger p-1" style="font-size: 0.5rem;">
+                        {{ unread_notifications_count }}
+                    </span>
+                    {% endif %}
+                </button>
+                <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-3" style="width: 320px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-dark mb-0">Notifications</h6>
+                        <a href="{% url 'notifications:mark_all_as_read' %}" class="btn btn-link text-primary p-0 small fw-bold text-decoration-none">Mark all as read</a>
+                    </div>
+                    <div class="notification-list" style="max-height: 300px; overflow-y: auto;">
+                        {% for n in topbar_notifications %}
+                        <a href="{% url 'notifications:mark_as_read' n.pk %}" class="d-block p-2 border-bottom border-secondary border-opacity-10 mb-2 text-decoration-none hover-bg-light rounded-3 transition-all">
+                            <div class="fw-bold text-dark small">{{ n.title }}</div>
+                            <div class="text-dark small opacity-75" style="font-size: 0.7rem;">{{ n.message|truncatechars:60 }}</div>
+                            <div class="text-dark opacity-50" style="font-size: 0.6rem;">{{ n.created_at|timesince }} ago</div>
+                        </a>
+                        {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-bell-slash fa-2x text-dark opacity-25 mb-2"></i>
+                            <div class="text-dark small">No new notifications</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-3 text-center border-top pt-2">
+                        <a href="{% url 'notifications:list' %}" class="text-primary small fw-bold text-decoration-none">View All Notifications</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-light rounded-3 p-2 bg-transparent border-secondary border-opacity-25" id="profileBtn">
+                <i class="fas fa-user-circle text-muted"></i>
+            </button>
+        </div>
+    </header>
+    {% endif %}
+
+    <main class="{% if user.is_authenticated %}main-content{% endif %}" id="mainContent">
+
+    <!-- AI CHAT SIDEBAR (OFFCANVAS) -->
+    <div class="offcanvas offcanvas-end glass-card border-0 shadow-lg" tabindex="-1" id="aiChatSidebar" style="width: 400px; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);">
+        <div class="offcanvas-header border-bottom border-secondary border-opacity-10 py-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #a855f7) !important;">
+                    <i class="fas fa-robot text-white"></i>
+                </div>
+                <div>
+                    <h5 class="offcanvas-title fw-bold text-dark" id="aiChatLabel">AI Assistant</h5>
+                    <small class="text-muted">Powered by Gemini AI</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-4">
+            <!-- Chat Messages Area -->
+            <div class="chat-container flex-grow-1 overflow-auto mb-4" id="aiChatMessages">
+                <div class="ai-bubble bg-light p-3 rounded-4 mb-3 shadow-sm border border-secondary border-opacity-10">
+                    <div class="fw-bold text-indigo small mb-1" style="color: #6366f1;">Assistant</div>
+                    <p class="text-dark mb-0 small">Hello, Brgy. Secretary! I can help you analyze your relief data. What would you like to know today?</p>
+                </div>
+                
+                <!-- Sample Quick Actions -->
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-outline-secondary btn-sm text-start rounded-3 py-2 px-3 opacity-75 hover-opacity-100 transition-all" onclick="appendMessage('Show me a summary of our current rice stock.')">
+                        <i class="fas fa-box-open me-2 text-success"></i> Show stock summary
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm text-start rounded-3 py-2 px-3 opacity-75 hover-opacity-100 transition-all" onclick="appendMessage('How many distributions were made yesterday?')">
+                        <i class="fas fa-history me-2 text-primary"></i> Yesterday's distributions
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-container pt-3 border-top">
+                <div class="input-group shadow-sm rounded-4 overflow-hidden">
+                    <input type="text" class="form-control border-0 bg-light px-3 py-2" placeholder="Ask me anything about your records..." id="aiInput">
+                    <button class="btn btn-primary border-0 px-4" style="background: linear-gradient(135deg, #6366f1, #a855f7) !important;" id="sendAiBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+        {% if messages %}
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1060;">
+                {% for message in messages %}
+                <div class="toast show glass-card border-0 mb-2" role="alert">
+                    <div class="toast-header bg-transparent border-0 text-dark">
+                        <i class="fas fa-circle-check me-2 text-success"></i>
+                        <strong class="me-auto">Notification</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body text-dark opacity-75">
+                        {{ message }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- JS LIBS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- AI CHAT JAVASCRIPT -->
+    <script>
+        function appendMessage(text, isUser = true) {
+            const container = document.getElementById('aiChatMessages');
+            const bubble = document.createElement('div');
+            bubble.className = isUser ? 'user-bubble bg-indigo text-white p-3 rounded-4 mb-3 shadow-sm ms-auto w-75' : 'ai-bubble bg-light p-3 rounded-4 mb-3 shadow-sm border border-secondary border-opacity-10 w-75';
+            if (isUser) bubble.style.background = 'linear-gradient(135deg, #6366f1, #4f46e5)';
+            
+            bubble.innerHTML = `
+                <div class="fw-bold small mb-1" style="color: ${isUser ? '#fff' : '#6366f1'}">${isUser ? 'You' : 'Assistant'}</div>
+                <p class="mb-0 small">${text}</p>
+            `;
+            container.appendChild(bubble);
+            container.scrollTop = container.scrollHeight;
+
+            if (isUser) {
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                fetch("{% url 'dashboard:ai_query' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrftoken
+                    },
+                    body: JSON.stringify({ "query": text })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    setTimeout(() => {
+                        appendMessage(data.response || "I'm having trouble accessing the data right now.", false);
+                    }, 800);
+                })
+                .catch(error => {
+                    console.error("AI Error:", error);
+                    appendMessage("Sorry, I encountered a system error.", false);
+                });
+            }
+        }
+
+            document.getElementById('sendAiBtn').addEventListener('click', () => {
+                const input = document.getElementById('aiInput');
+            if (input.value.trim()) {
+                appendMessage(input.value);
+                input.value = '';
+            }
+        });
+
+        document.getElementById('aiInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('sendAiBtn').click();
+            }
+        });
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const topbar = document.getElementById('mainTopbar');
+            const content = document.getElementById('mainContent');
+            const icon = document.getElementById('toggleIcon');
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+
+            const isCollapsed = sidebar.classList.toggle('collapsed');
+            topbar.classList.toggle('expanded', isCollapsed);
+            content.classList.toggle('expanded', isCollapsed);
+
+            // Handle Desktop Toggle Icon
+            if (icon) {
+                icon.classList.toggle('fa-chevron-left', !isCollapsed);
+                icon.classList.toggle('fa-chevron-right', isCollapsed);
+            }
+
+            // Handle Mobile View
+            if (window.innerWidth <= 1200) {
+                sidebar.classList.toggle('show');
+            }
+        }
+
+        // Initialize Mobile Menu Button visibility
+        window.addEventListener('resize', () => {
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            if (window.innerWidth <= 1200) {
+                mobileBtn.style.display = 'flex';
+            } else {
+                mobileBtn.style.display = 'none';
+            }
+        });
+        // Profile Navigation
+        const profileBtn = document.getElementById("profileBtn");
+        if (profileBtn) {
+            profileBtn.addEventListener("click", () => {
+                window.location.href = "{% url 'accounts:profile' %}";
+            });
+        }
+    </script>
+</body>
+</html>

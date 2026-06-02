@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{ kit.name }} | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <a href="{% url 'inventory:kit_list' %}" class="btn btn-sm btn-light rounded-3"><i class="fas fa-arrow-left"></i></a>
+                <span class="badge bg-primary px-3 py-2">Editing Kit</span>
+            </div>
+            <h1 class="fw-bold text-dark mb-1" style="letter-spacing: -1.5px;">{{ kit.name }}</h1>
+            <p class="text-dark fw-medium">Define the contents and quantities for this relief bundle</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Add Item Form -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-dark mb-4">Add Item to Kit</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold small">Select Item</label>
+                        <select name="item_id" class="form-select rounded-4 p-3 border-secondary border-opacity-25" required>
+                            <option value="">-- Choose Item --</option>
+                            {% for item in items %}
+                            <option value="{{ item.id }}">{{ item.name }} ({{ item.stock_quantity }} in stock)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-dark fw-bold small">Quantity per Kit</label>
+                        <input type="number" name="quantity" class="form-control rounded-4 p-3 border-secondary border-opacity-25" value="1" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-4 fw-bold">
+                        <i class="fas fa-plus me-2"></i> Add to Recipe
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Current Contents -->
+        <div class="col-lg-8">
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-dark mb-4">Current Bundle Recipe</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 text-dark py-3">Item Name</th>
+                                <th class="border-0 text-dark py-3">Category</th>
+                                <th class="border-0 text-dark py-3">Qty per Kit</th>
+                                <th class="border-0 text-dark py-3 text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for kit_item in kit.items.all %}
+                            <tr>
+                                <td class="py-3 fw-bold text-dark">{{ kit_item.item.name }}</td>
+                                <td class="py-3 text-dark">{{ kit_item.item.category }}</td>
+                                <td class="py-3 text-dark">
+                                    <span class="badge bg-light text-dark border px-3 py-2">x {{ kit_item.quantity }}</span>
+                                </td>
+                                <td class="py-3 text-end">
+                                    <a href="{% url 'inventory:kit_remove_item' kit.pk kit_item.pk %}" class="btn btn-sm btn-outline-danger rounded-3">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-dark opacity-50">
+                                    No items added to this recipe yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-4 text-end">
+                <a href="{% url 'inventory:kit_list' %}" class="btn btn-success px-5 py-3 rounded-4 fw-bold shadow-sm">
+                    <i class="fas fa-check-circle me-2"></i> Save and Finish Recipe
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

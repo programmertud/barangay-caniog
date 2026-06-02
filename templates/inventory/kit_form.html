@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if object %}Edit{% else %}Define{% endif %} Kit | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card p-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <a href="{% url 'inventory:kit_list' %}" class="btn btn-sm btn-light rounded-3">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h2 class="fw-bold text-dark mb-0" style="letter-spacing: -1px;">{% if object %}Edit{% else %}Define New{% endif %} Kit</h2>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-4 py-3 shadow-sm">
+                            <i class="fas fa-save me-2"></i> {% if object %}Update Kit{% else %}Create Kit and Open Editor{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

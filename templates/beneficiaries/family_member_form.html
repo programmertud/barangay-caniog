@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Family Member | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card p-5">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <a href="{% url 'beneficiaries:detail' view.kwargs.pk %}" class="btn btn-sm btn-light rounded-3">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h2 class="fw-bold text-dark mb-0" style="letter-spacing: -1px;">Add Family Member</h2>
+                </div>
+                
+                <form method="post" class="needs-validation">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            {{ form.full_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.relationship_to_head|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.gender|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.age|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.birthdate|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mt-4 mb-3 border-bottom pb-2">Vulnerability Status</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            {{ form.is_pwd|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.is_senior_citizen|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.is_pregnant|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.is_lactating_mother|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.is_solo_parent|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-4 py-3 shadow-sm">
+                            <i class="fas fa-save me-2"></i> Save Family Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

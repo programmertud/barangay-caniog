@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}QR Verification - Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="glass-card p-5 text-center">
+                <div class="bg-primary bg-opacity-10 p-4 rounded-circle d-inline-block mb-4">
+                    <i class="fas fa-qrcode fa-4x text-primary"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-3">QR Claim Verification</h2>
+                <p class="text-muted mb-4">Scan the beneficiary's QR code or enter the reference number manually to verify eligibility.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <input type="text" name="qr_data" class="form-control form-control-lg bg-light text-dark text-center border-2 border-primary border-opacity-25 py-3" placeholder="Scan or Type QR Data..." autofocus>
+                    </div>
+                    <button type="submit" class="btn btn-primary-glass w-100 py-3">
+                        <i class="fas fa-search me-2"></i> Verify Beneficiary
+                    </button>
+                </form>
+                
+                <div class="mt-4 border-top border-secondary pt-4">
+                    <h6 class="text-muted small fw-bold">HOW IT WORKS</h6>
+                    <ul class="list-unstyled text-muted small text-start d-inline-block">
+                        <li><i class="fas fa-check text-success me-2"></i> Scan the QR code printed on the claim stub</li>
+                        <li><i class="fas fa-check text-success me-2"></i> System validates identity and priority status</li>
+                        <li><i class="fas fa-check text-success me-2"></i> Duplicate claim check is performed automatically</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Keep input focused at all times for hardware scanners
+    const qrInput = document.querySelector('input[name="qr_data"]');
+    
+    // Initial focus
+    if (qrInput) qrInput.focus();
+    
+    // Refocus if focus is lost (except when clicking on buttons)
+    document.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && e.target.tagName !== 'I') {
+            qrInput.focus();
+        }
+    });
+</script>
+{% endblock %}

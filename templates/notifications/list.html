@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h1 class="fw-bold text-dark mb-1" style="letter-spacing: -1.5px;">Notifications</h1>
+            <p class="text-dark fw-medium">Review your system alerts and operational updates</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'notifications:mark_all_as_read' %}" class="btn btn-outline-primary fw-bold rounded-4 px-4">
+                <i class="fas fa-check-double me-2"></i> Mark All as Read
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="glass-card overflow-hidden">
+                <div class="list-group list-group-flush">
+                    {% for n in notifications %}
+                    <div class="list-group-item p-4 {% if not n.is_read %}bg-light bg-opacity-50 border-start border-4 border-primary{% else %}bg-transparent{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex gap-3">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <i class="fas {% if n.is_read %}fa-bell-slash text-secondary{% else %}fa-bell text-primary{% endif %} fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">{{ n.title }}</h6>
+                                    <p class="text-dark mb-2">{{ n.message }}</p>
+                                    <div class="text-dark opacity-50 small">
+                                        <i class="far fa-clock me-1"></i> {{ n.created_at|date:"F d, Y H:i" }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% if not n.is_read %}
+                            <a href="{% url 'notifications:mark_as_read' n.pk %}" class="btn btn-sm btn-light rounded-3 text-primary fw-bold px-3">
+                                Mark as Read
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-bell-slash fa-4x text-dark opacity-25 mb-4"></i>
+                        <h4 class="text-dark fw-bold">No notifications yet</h4>
+                        <p class="text-dark opacity-75">You're all caught up! New alerts will appear here.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link rounded-start-4 px-3" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link px-4">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link rounded-end-4 px-3" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

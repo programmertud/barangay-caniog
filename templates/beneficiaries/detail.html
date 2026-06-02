@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ beneficiary.full_name }} | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <a href="{% url 'beneficiaries:list' %}" class="btn btn-sm btn-light rounded-3"><i class="fas fa-arrow-left"></i></a>
+            </div>
+            <h1 class="fw-bold text-dark mb-1" style="letter-spacing: -1.5px;">{{ beneficiary.full_name }}</h1>
+            <p class="text-dark fw-medium">
+                <i class="fas fa-id-card text-primary me-2"></i> DAFAC #: {{ beneficiary.dafac_number|default:"N/A" }} | 
+                <i class="fas fa-hashtag text-primary mx-2"></i> REF: {{ beneficiary.claim_reference_number }}
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="d-flex gap-2 justify-content-md-end">
+                <a href="{% url 'beneficiaries:edit' beneficiary.pk %}" class="btn btn-outline-primary fw-bold rounded-4 px-4">
+                    <i class="fas fa-edit me-2"></i> Edit
+                </a>
+                <a href="{% url 'beneficiaries:delete' beneficiary.pk %}" class="btn btn-outline-danger fw-bold rounded-4 px-4">
+                    <i class="fas fa-trash-alt me-2"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Info -->
+        <div class="col-lg-8">
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-3">Household Vulnerability</h5>
+                <div class="row g-4 text-center">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="text-dark small fw-bold text-uppercase mb-1">Priority Level</div>
+                            <h4 class="fw-bold text-dark mb-0">{{ beneficiary.get_priority_level_display }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="text-dark small fw-bold text-uppercase mb-1">Priority Score</div>
+                            <h4 class="fw-bold text-primary mb-0">{{ beneficiary.priority_score }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="text-dark small fw-bold text-uppercase mb-1">Claim Status</div>
+                            <h4 class="fw-bold text-dark mb-0">{{ beneficiary.get_claim_status_display }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-3">Detailed Information</h5>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="text-dark opacity-50 small fw-bold text-uppercase d-block">Address</label>
+                            <span class="text-dark fw-bold">{{ beneficiary.address }}, {{ beneficiary.barangay }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-dark opacity-50 small fw-bold text-uppercase d-block">Contact Number</label>
+                            <span class="text-dark fw-bold">{{ beneficiary.contact_number }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-dark opacity-50 small fw-bold text-uppercase d-block">Gender & Age</label>
+                            <span class="text-dark fw-bold">{{ beneficiary.get_gender_display }}, {{ beneficiary.age }} Years Old</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="text-dark opacity-50 small fw-bold text-uppercase d-block">Household Members</label>
+                            <span class="text-dark fw-bold">{{ beneficiary.family_member_count }} Total ({{ beneficiary.children_count }} Child, {{ beneficiary.elderly_count }} Elderly)</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-dark opacity-50 small fw-bold text-uppercase d-block">Employment & Income</label>
+                            <span class="text-dark fw-bold">{{ beneficiary.employment_status }} | ₱{{ beneficiary.monthly_income }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Family Members Section -->
+            <div class="glass-card p-4 mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <h5 class="fw-bold text-dark mb-0">Family Members</h5>
+                    <a href="{% url 'beneficiaries:family_add' beneficiary.pk %}" class="btn btn-sm btn-primary rounded-3 px-3">
+                        <i class="fas fa-plus me-1"></i> Add Member
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="text-dark fw-bold small">Name</th>
+                                <th class="text-dark fw-bold small">Relationship</th>
+                                <th class="text-dark fw-bold small">Age/Gender</th>
+                                <th class="text-dark fw-bold small">Vulnerabilities</th>
+                                <th class="text-dark fw-bold small text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in beneficiary.family_members.all %}
+                            <tr>
+                                <td class="text-dark fw-bold">{{ member.full_name }}</td>
+                                <td><span class="badge bg-info-subtle text-info border border-info-subtle">{{ member.get_relationship_to_head_display }}</span></td>
+                                <td class="text-dark">{{ member.age }} ({{ member.gender|first }})</td>
+                                <td>
+                                    {% if member.is_pwd %}<span class="badge bg-danger px-2 me-1">PWD</span>{% endif %}
+                                    {% if member.is_senior_citizen %}<span class="badge bg-secondary px-2 me-1">Elderly</span>{% endif %}
+                                    {% if member.is_pregnant %}<span class="badge bg-warning text-dark px-2 me-1">Pregnant</span>{% endif %}
+                                    {% if member.is_lactating_mother %}<span class="badge bg-success px-2 me-1">Lactating</span>{% endif %}
+                                    {% if not member.is_pwd and not member.is_senior_citizen and not member.is_pregnant and not member.is_lactating_mother %}
+                                        <span class="text-dark opacity-50 small">None</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'beneficiaries:family_edit' member.pk %}" class="text-primary me-2"><i class="fas fa-edit"></i></a>
+                                    <a href="{% url 'beneficiaries:family_delete' member.pk %}" class="text-danger"><i class="fas fa-times-circle"></i></a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-dark opacity-50">No other family members registered.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar: QR and Photos -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4 mb-4 text-center">
+                <h5 class="fw-bold text-dark mb-4">Digital ID (QR)</h5>
+                {% if beneficiary.qr_code %}
+                    <img src="{{ beneficiary.qr_code.url }}" class="img-fluid rounded-4 mb-3 border" style="max-width: 180px;">
+                {% endif %}
+                <div class="text-dark fw-bold">{{ beneficiary.claim_reference_number }}</div>
+                <p class="text-dark small opacity-75 mt-2">Scan this code to verify distribution</p>
+            </div>
+
+            <div class="glass-card p-4 text-center">
+                <h5 class="fw-bold text-dark mb-4">Beneficiary Photo</h5>
+                {% if beneficiary.beneficiary_photo %}
+                    <img src="{{ beneficiary.beneficiary_photo.url }}" class="img-fluid rounded-4 border" style="max-height: 250px; width: 100%; object-fit: cover;">
+                {% else %}
+                    <div class="py-5 bg-light rounded-4 border">
+                        <i class="fas fa-user-circle fa-4x text-dark opacity-25"></i>
+                        <div class="text-dark small mt-2">No photo on file</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics & Reports | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h1 class="fw-bold text-dark mb-1" style="letter-spacing: -1.5px;">Analytics & Reports</h1>
+            <p class="text-dark fw-medium">Operational insights and government-standard data exports</p>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="glass-card p-4 border-top border-4 border-primary">
+                <div class="text-dark opacity-50 small fw-bold text-uppercase mb-1">Total Beneficiaries</div>
+                <h2 class="fw-bold text-dark mb-0">{{ total_beneficiaries }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card p-4 border-top border-4 border-success">
+                <div class="text-dark opacity-50 small fw-bold text-uppercase mb-1">Total Distributions</div>
+                <h2 class="fw-bold text-dark mb-0">{{ total_distributions }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card p-4 border-top border-4 border-info">
+                <div class="text-dark opacity-50 small fw-bold text-uppercase mb-1">Active Events</div>
+                <h2 class="fw-bold text-dark mb-0">{{ total_events }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card p-4 border-top border-4 border-warning">
+                <div class="text-dark opacity-50 small fw-bold text-uppercase mb-1">Low Stock Items</div>
+                <h2 class="fw-bold text-dark mb-0">{{ total_low_stock }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Export Center -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-3">Data Export Center</h5>
+                <p class="text-dark small opacity-75 mb-4">Download system data in Excel/CSV format for DSWD reporting and offline analysis.</p>
+                
+                <div class="d-grid gap-3">
+                    <a href="{% url 'reports:export_beneficiaries' %}" class="btn btn-light border p-4 rounded-4 text-start hover-bg-light transition-all">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Beneficiary Masterlist</h6>
+                                <p class="text-dark small opacity-50 mb-0">Complete demographic and priority data</p>
+                            </div>
+                            <i class="fas fa-file-excel fa-2x text-success"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'reports:export_inventory' %}" class="btn btn-light border p-4 rounded-4 text-start hover-bg-light transition-all">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Inventory & Stock Report</h6>
+                                <p class="text-dark small opacity-50 mb-0">Current levels, batches, and expiry dates</p>
+                            </div>
+                            <i class="fas fa-file-excel fa-2x text-primary"></i>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'reports:export_dromic' %}" class="btn btn-primary-subtle border border-primary-subtle p-4 rounded-4 text-start hover-bg-primary transition-all">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">DSWD DROMIC Report</h6>
+                                <p class="text-dark small opacity-50 mb-0">Aggregated demographic data for government reporting</p>
+                            </div>
+                            <i class="fas fa-file-export fa-2x text-primary"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demographic Insights (Placeholder for Chart) -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-3">Priority Distribution</h5>
+                <canvas id="priorityChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('priorityChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['High Priority', 'Medium Priority', 'Low Priority'],
+            datasets: [{
+                data: [{{ high_priority }}, {{ medium_priority }}, {{ low_priority }}],
+                backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#000000',
+                        font: { weight: 'bold' }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

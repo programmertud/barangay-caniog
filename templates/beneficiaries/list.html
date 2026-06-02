@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Beneficiaries | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-7">
+            <h1 class="fw-bold text-dark mb-1" style="letter-spacing: -1.5px;">Beneficiaries</h1>
+            <p class="text-muted fw-medium">Manage and prioritize household records with real-time analytics</p>
+        </div>
+        <div class="col-md-5 text-md-end">
+            <div class="d-flex gap-2 justify-content-md-end">
+                <a href="{% url 'beneficiaries:export_csv' %}" class="btn btn-light border fw-bold text-dark">
+                    <i class="fas fa-file-export me-2"></i> Export
+                </a>
+                <a href="{% url 'beneficiaries:category_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-tags me-2"></i> Categories
+                </a>
+                <a href="{% url 'beneficiaries:add' %}" class="btn btn-primary-glass text-dark fw-bold">
+                    <i class="fas fa-user-plus me-2 text-dark"></i> Register Beneficiary
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- All-in-One Stats Bar -->
+    <div class="row g-3 mb-5 row-cols-1 row-cols-md-2 row-cols-lg-4">
+        <div class="col">
+            <div class="glass-card p-3 border-0 shadow-sm h-100">
+                <div class="text-muted mb-1" style="font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Total Records</div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="fw-bold mb-0 text-dark">{{ beneficiaries.count }}</h3>
+                    <div class="p-2 rounded-3" style="background-color: rgba(22, 101, 52, 0.1);"><i class="fas fa-database small" style="color: #166534;"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="glass-card p-3 border-0 shadow-sm h-100">
+                <div class="text-muted mb-1" style="font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">High Priority</div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="fw-bold mb-0 text-danger">{{ stats.high_priority }}</h3>
+                    <div class="bg-danger bg-opacity-10 p-2 rounded-3"><i class="fas fa-fire-alt text-danger small"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="glass-card p-3 border-0 shadow-sm h-100">
+                <div class="text-muted mb-1" style="font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Medium</div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="fw-bold mb-0 text-info">{{ stats.medium_priority }}</h3>
+                    <div class="bg-info bg-opacity-10 p-2 rounded-3"><i class="fas fa-layer-group text-info small"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="glass-card p-3 border-0 shadow-sm h-100">
+                <div class="text-muted mb-1" style="font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Low</div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h3 class="fw-bold mb-0 text-secondary">{{ stats.low_priority }}</h3>
+                    <div class="p-2 rounded-3" style="background-color: rgba(29, 78, 216, 0.1);"><i class="fas fa-user-friends small" style="color: #1d4ed8;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="glass-card p-4 mb-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label text-dark small fw-bold">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" name="search" class="form-control bg-light border-start-0" placeholder="Name, HH#, or Reference..." value="{{ request.GET.search }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-dark small fw-bold">Priority</label>
+                <select name="priority" class="form-select bg-light">
+                    <option value="">All Levels</option>
+                    <option value="HIGH" {% if request.GET.priority == 'HIGH' %}selected{% endif %}>High</option>
+                    <option value="MEDIUM" {% if request.GET.priority == 'MEDIUM' %}selected{% endif %}>Medium</option>
+                    <option value="LOW" {% if request.GET.priority == 'LOW' %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-dark small fw-bold">Category</label>
+                <select name="category" class="form-select bg-light">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"i" %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary w-100 py-2">Filter</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'beneficiaries:list' %}" class="btn btn-outline-secondary w-100 py-2">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Data Table Card -->
+    <div class="glass-card p-4">
+        <div class="table-responsive">
+            <table class="table table-glass align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-0" style="width: 35%;">Beneficiary Information</th>
+                        <th style="width: 20%;">Household #</th>
+                        <th style="width: 20%;">Priority Level</th>
+                        <th style="width: 15%;">Status</th>
+                        <th class="text-end pe-0" style="width: 10%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for beneficiary in beneficiaries %}
+                    <tr>
+                        <td class="ps-0">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3 position-relative" style="width: 42px; height: 42px;">
+                                    <img src="{% if beneficiary.beneficiary_photo %}{{ beneficiary.beneficiary_photo.url }}{% else %}https://ui-avatars.com/api/?name={{ beneficiary.full_name|urlencode }}&background=6366f1&color=fff{% endif %}" 
+                                         class="rounded-3 shadow-sm" 
+                                         style="width: 100%; height: 100%; object-fit: cover; border: 2px solid #fff;">
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ beneficiary.full_name }}</div>
+                                    <div class="text-muted" style="font-size: 0.65rem;">{{ beneficiary.claim_reference_number }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">{{ beneficiary.household_number }}</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">{{ beneficiary.barangay }}</div>
+                        </td>
+
+                        <td>
+                            {% if beneficiary.priority_level == 'HIGH' %}
+                                <span class="badge bg-danger text-white px-3 py-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">HIGH PRIORITY</span>
+                            {% elif beneficiary.priority_level == 'MEDIUM' %}
+                                <span class="badge bg-info text-white px-3 py-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">MEDIUM</span>
+                            {% else %}
+                                <span class="badge bg-secondary text-white px-3 py-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">LOW</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if beneficiary.claim_status == 'CLAIMED' %}success{% else %}warning{% endif %} bg-opacity-25 text-{% if beneficiary.claim_status == 'CLAIMED' %}success{% else %}warning-emphasis{% endif %} px-2 py-1">
+                                <i class="fas fa-circle x-small me-1"></i> {{ beneficiary.get_claim_status_display }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-0">
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-3 p-2" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v text-muted"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2">
+                                    <li><a class="dropdown-item rounded-3 py-2" href="{% url 'beneficiaries:detail' beneficiary.pk %}"><i class="fas fa-eye me-2 text-info"></i> View Details</a></li>
+                                    <li><a class="dropdown-item rounded-3 py-2" href="{% url 'beneficiaries:edit' beneficiary.pk %}"><i class="fas fa-edit me-2 text-primary"></i> Edit Record</a></li>
+
+                                    <li><hr class="dropdown-divider opacity-50"></li>
+                                    <li><a class="dropdown-item rounded-3 py-2 text-danger" href="{% url 'beneficiaries:delete' beneficiary.pk %}"><i class="fas fa-trash-alt me-2"></i> Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="py-4">
+                                <i class="fas fa-users-slash fa-3x text-muted mb-3 opacity-25"></i>
+                                <h5 class="text-dark opacity-50">No Beneficiaries Found</h5>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

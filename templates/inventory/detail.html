@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ item.name }} | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <a href="{% url 'inventory:list' %}" class="btn btn-sm btn-light rounded-3"><i class="fas fa-arrow-left"></i></a>
+                <span class="badge {% if item.is_low_stock %}bg-danger{% else %}bg-success{% endif %} px-3 py-2 text-white">
+                    {% if item.is_low_stock %}Low Stock{% else %}In Stock{% endif %}
+                </span>
+            </div>
+            <h1 class="fw-bold text-dark mb-1" style="letter-spacing: -1.5px;">{{ item.name }}</h1>
+            <p class="text-dark fw-medium">
+                <i class="fas fa-tags text-primary me-2"></i> Category: {{ item.category }} | 
+                <i class="fas fa-barcode text-primary mx-2"></i> Batch: {{ item.batch_number|default:"N/A" }}
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="d-flex gap-2 justify-content-md-end">
+                <a href="{% url 'inventory:edit' item.pk %}" class="btn btn-outline-primary fw-bold rounded-4 px-4">
+                    <i class="fas fa-edit me-2"></i> Edit Item
+                </a>
+                <a href="{% url 'inventory:delete' item.pk %}" class="btn btn-outline-danger fw-bold rounded-4 px-4">
+                    <i class="fas fa-trash-alt me-2"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Stock Details -->
+        <div class="col-lg-8">
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-3">Inventory Status</h5>
+                <div class="row g-4 text-center">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="text-dark small fw-bold text-uppercase mb-1">Current Stock</div>
+                            <h1 class="display-5 fw-bold text-primary mb-0">{{ item.stock_quantity }}</h1>
+                            <div class="text-dark small fw-bold">{{ item.unit }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="text-dark small fw-bold text-uppercase mb-1">Low Threshold</div>
+                            <h4 class="fw-bold text-dark mb-0">{{ item.low_stock_threshold }}</h4>
+                            <div class="text-dark small opacity-50">Alert limit</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="text-dark small fw-bold text-uppercase mb-1">Expiry Date</div>
+                            <h4 class="fw-bold text-dark mb-0">{{ item.expiry_date|date:"M d, Y"|default:"No Expiry" }}</h4>
+                            <div class="text-dark small opacity-50">Storage safety</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-dark mb-4 border-bottom pb-3">Item Description</h5>
+                <p class="text-dark">{{ item.description|default:"No description provided for this item." }}</p>
+            </div>
+        </div>
+
+        <!-- Transaction History (Partial) -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-dark mb-4">Recent Transactions</h5>
+                <div class="list-group list-group-flush">
+                    {% for trans in item.transactions.all|slice:":5" %}
+                    <div class="list-group-item bg-transparent px-0 border-secondary border-opacity-10">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="badge {% if trans.transaction_type == 'ADD' %}bg-success{% else %}bg-danger{% endif %} small">
+                                {{ trans.get_transaction_type_display }}
+                            </span>
+                            <span class="text-dark small fw-bold">{{ trans.quantity }} {{ item.unit }}</span>
+                        </div>
+                        <div class="text-dark small opacity-75">{{ trans.reason }}</div>
+                        <div class="text-dark opacity-50" style="font-size: 0.6rem;">{{ trans.timestamp|date:"M d, Y H:i" }}</div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-dark opacity-50">No transaction history.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

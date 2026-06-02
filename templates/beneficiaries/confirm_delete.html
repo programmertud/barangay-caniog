@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete {{ object.full_name }} | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 text-center">
+            <div class="glass-card p-5 border-top border-4 border-danger">
+                <i class="fas fa-exclamation-triangle fa-4x text-danger mb-4"></i>
+                <h2 class="fw-bold text-dark mb-3">Confirm Deletion</h2>
+                <p class="text-dark mb-5">Are you sure you want to delete the record for <strong>{{ object.full_name }}</strong>? This action cannot be undone.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger py-3 rounded-4 fw-bold">
+                            <i class="fas fa-trash-alt me-2"></i> Permanently Delete Record
+                        </button>
+                        <a href="{% url 'beneficiaries:detail' object.pk %}" class="btn btn-light py-3 rounded-4 fw-bold border text-dark">
+                            Cancel and Go Back
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

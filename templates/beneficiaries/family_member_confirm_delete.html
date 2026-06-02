@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Remove Family Member | Aid Distribution Tracker System (Relief Goods){% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-card p-5 text-center">
+                <div class="mb-4">
+                    <i class="fas fa-exclamation-triangle fa-4x text-warning"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-3">Remove Member?</h2>
+                <p class="text-dark opacity-75 mb-5">
+                    Are you sure you want to remove <strong>{{ object.full_name }}</strong> from this household? 
+                    This action will update the household statistics automatically.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-danger btn-lg fw-bold rounded-4 py-3">
+                            <i class="fas fa-trash-alt me-2"></i> Yes, Remove Member
+                        </button>
+                        <a href="{% url 'beneficiaries:detail' object.beneficiary.pk %}" class="btn btn-light btn-lg fw-bold rounded-4 py-3">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
