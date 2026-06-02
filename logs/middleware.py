@@ -28,3 +28,9 @@ class RequestMiddleware:
         _thread_locals.request = request
         response = self.get_response(request)
         return response
+
+    def process_exception(self, request, exception):
+        import traceback
+        from django.http import HttpResponse
+        error_msg = traceback.format_exc()
+        return HttpResponse(f"RUNTIME ERROR:\n\n{error_msg}", content_type="text/plain")
